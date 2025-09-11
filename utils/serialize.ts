@@ -2,35 +2,51 @@ import {
   getContentType,
   isJidGroup,
   isJidNewsletter,
+  isPnUser,
   normalizeMessageContent,
   type WAMessage,
 } from "baileys";
 import { extract_txt } from "./extract.ts";
 import { get_contact } from "../sql/contacts.ts";
 
-export default async (message: WAMessage) => {
-  const chatId = message.key.remoteJid!;
-  const group = isJidGroup(chatId);
-  const newsletter = isJidNewsletter(chatId);
-  const broadcast = message.broadcast
-  const content = normalizeMessageContent(message.message);
-  const text = extract_txt(message.message!);
-  const sender = group ? message.key.participant : chatId;
+export default async function serialize(msg: WAMessage) {
+  const { messageTimestamp, pushName, key } = msg;
+
+  const chat = key.remoteJid!;
+  const isGroup = isJidGroup(chat);
+  const isNewsletter = isJidNewsletter(chat);
+  const isBroadcast = msg.broadcast;
+  const isPrivate = !isGroup && !isNewsletter && !isBroadcast;
+  const message = normalizeMessageContent(msg.message);
+  const text = extract_txt(msg.message!);
+  const mtype = getContentType(message);
+  const sender = isGroup ? msg.key.participant : chat;
+  const { pn, lid } = await get_contact(sender!);
+  const senderAlt = isPnUser(sender!) ? lid : pn;
+  const isMsgDlt = message?.protocolMessage?.type == 0;
+  const isMsgEdit = message?.protocolMessage?.type == 14;
+  //@ts-ignore
+  const mentions = message?.[mtype]?.contextInfo?.mentionedJid || null;
 
   return {
-    chat: chatId,
-    fromMe: message.key.fromMe,
-    id: message.key.id,
-    pushName: message.pushName,
-    mtype: getContentType(content),
-    timestamp: message.messageTimestamp,
-    isGroup: group,
-    isNewsletter: newsletter,
-    isPrivate: !group && !newsletter && !broadcast,
-    isBroadcast: broadcast,
+    chat,
+    fromMe: key.fromMe,
+    id: key.id,
+    pushName,
+    mtype,
+    messageTimestamp,
+    isGroup,
+    isNewsletter,
+    isPrivate,
+    isBroadcast,
+    isMsgDlt,
+    isMsgEdit,
     sender,
-    senderAlt: await get_contact(sender!).then((contact) => contact?.lid),
-    message: content,
+    senderAlt,
+    message,
     text,
+    mentions,
   };
-};
+}
+
+export type Serialize = Awaited<ReturnType<typeof serialize>>;

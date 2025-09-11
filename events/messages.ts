@@ -1,13 +1,16 @@
-import type { WAMessage } from "baileys";
+import type { WAMessage, WASocket } from "baileys";
 import { add_message } from "../sql/messages.ts";
 import serialize from "../utils/serialize.ts";
+import response from "./response.ts";
 
-export default async (message: WAMessage) => {
+export default async (message: WAMessage, client: WASocket) => {
   let tasks: unknown[] = [];
 
-  tasks.push(add_message(message));
+  const msg = await serialize(message);
 
-  tasks.push(serialize(message).then((data) => console.log(data)));
+  tasks.push(response(msg, client));
+
+  tasks.push(add_message(message));
 
   await Promise.all(tasks);
 };

@@ -35,7 +35,12 @@ export const get_contacts = async () => {
   return await Contact.findAll();
 };
 
-export const get_contact = async (id: string) => {
+export const get_contact = async (
+  id: string
+): Promise<{
+  pn: string;
+  lid: string;
+}> => {
   let queryIds = [id];
 
   if (!id.endsWith("@s.whatsapp.net") && !id.endsWith("@lid")) {
@@ -47,5 +52,5 @@ export const get_contact = async (id: string) => {
     attributes: ["pn", "lid"],
   });
 
-  return contact ? contact.get({ plain: true }) : null;
+  return contact ? contact.get({ plain: true }) : { pn: "", lid: "" };
 };

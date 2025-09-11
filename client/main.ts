@@ -12,7 +12,7 @@ import { add_message, getMessage } from "../sql/messages.ts";
 import messages from "../events/messages.ts";
 
 const logger = P.pino({
-  level: "debug",
+  level: "warn",
   transport: {
     targets: [
       {
@@ -23,11 +23,13 @@ const logger = P.pino({
       {
         target: "pino/file",
         options: { destination: "./wa-logs.txt" },
-        level: "debug",
+        level: "warn",
       },
     ],
   },
 });
+
+logger.level = "warn";
 
 const msgRetryCounterCache = new NodeCache() as CacheStore;
 
@@ -89,7 +91,7 @@ const startSock = async () => {
             keys: [protocolMessage.key!],
           });
         }
-        await messages(upsert.messages[0]);
+        await messages(upsert.messages[0], sock);
       }
 
       if (events["presence.update"]) {
