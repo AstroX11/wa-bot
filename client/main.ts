@@ -12,24 +12,24 @@ import { add_message, getMessage } from "../sql/messages.ts";
 import messages from "../events/messages.ts";
 
 const logger = P.pino({
-  level: "warn",
+  level: "info",
   transport: {
     targets: [
       {
         target: "pino-pretty",
         options: { colorize: true },
-        level: "warn",
+        level: "info",
       },
       {
         target: "pino/file",
         options: { destination: "./wa-logs.txt" },
-        level: "warn",
+        level: "info",
       },
     ],
   },
 });
 
-logger.level = "warn";
+logger.level = "info";
 
 const msgRetryCounterCache = new NodeCache() as CacheStore;
 

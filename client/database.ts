@@ -33,7 +33,7 @@ if (process.env.PG_HOST) {
     logging: false,
     dialectOptions: {
       foreignKeys: true,
-       timeout: 30000 
+      timeout: 30000,
     },
     pool: {
       max: 10,
@@ -56,15 +56,17 @@ if (process.env.PG_HOST) {
     },
   });
 
-  await sequelize.query("PRAGMA journal_mode = WAL;");
-  await sequelize.query("PRAGMA synchronous = NORMAL;");
-  await sequelize.query("PRAGMA cache_size = -64000;");
-  await sequelize.query("PRAGMA temp_store = MEMORY;");
-  await sequelize.query("PRAGMA mmap_size = 536870912;");
-  await sequelize.query("PRAGMA page_size = 4096;");
-  await sequelize.query("PRAGMA wal_autocheckpoint = 1000;");
-  await sequelize.query("PRAGMA busy_timeout = 30000;");
-  await sequelize.query("PRAGMA optimize;");
+  await sequelize.query(`
+  PRAGMA journal_mode = WAL;
+  PRAGMA synchronous = NORMAL;
+  PRAGMA cache_size = -64000;
+  PRAGMA temp_store = MEMORY;
+  PRAGMA mmap_size = 536870912;
+  PRAGMA page_size = 4096;
+  PRAGMA wal_autocheckpoint = 1000;
+  PRAGMA busy_timeout = 30000;
+  PRAGMA optimize;
+`);
 }
 
 export default sequelize;
