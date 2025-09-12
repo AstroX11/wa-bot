@@ -19,14 +19,14 @@ export const add_contact = async (id: string, second?: string) => {
 
   if (isPnUser(id)) pn = id;
   else if (isLidUser(id)) lid = id;
-  else throw new Error("invalid id");
+  else return;
 
   if (second) {
     if (isPnUser(second)) pn = second;
     else if (isLidUser(second)) lid = second;
   }
 
-  if (!pn || !lid) throw new Error("both pn and lid required");
+  if (!pn || !lid) return;
 
   return await Contact.upsert({ pn, lid });
 };
