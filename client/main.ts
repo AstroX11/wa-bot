@@ -10,6 +10,7 @@ import * as P from "pino";
 import authstate from "../sql/authstate.ts";
 import { add_message, getMessage } from "../sql/messages.ts";
 import messages from "../events/messages.ts";
+import type { GroupMetadata } from "baileys";
 
 const logger = P.pino({
   level: "info",
@@ -32,6 +33,7 @@ const logger = P.pino({
 logger.level = "info";
 
 const msgRetryCounterCache = new NodeCache() as CacheStore;
+export const groupMetaDataCache = new NodeCache();
 
 const startSock = async () => {
   const { state, saveCreds } = await authstate();
@@ -44,6 +46,7 @@ const startSock = async () => {
     generateHighQualityLinkPreview: true,
     logger,
     getMessage,
+    cachedGroupMetadata,
   });
 
   if (!sock.authState.creds.registered) {
@@ -117,3 +120,7 @@ const startSock = async () => {
 };
 
 startSock();
+
+async function cachedGroupMetadata(jid: string) {
+  return groupMetaDataCache.get(jid) as GroupMetadata | undefined;
+}
