@@ -1,6 +1,7 @@
 import makeWASocket, {
   delay,
   DisconnectReason,
+  isJidGroup,
   makeCacheableSignalKeyStore,
   type CacheStore,
 } from "baileys";
@@ -12,6 +13,7 @@ import messages from "../events/messages.ts";
 import { getMessage } from "../sql/messages.ts";
 import { cachedGroupMetadata } from "../utils/cache.ts";
 import config from "../config.ts";
+import { add_contact } from "../sql/contacts.ts";
 
 const logger = pino({
   level: config.NODE_ENV == "development" ? "info" : "error",
@@ -34,7 +36,7 @@ const logger = pino({
 logger.level = config.NODE_ENV == "development" ? "info" : "error";
 
 const msgRetryCounterCache = new NodeCache() as CacheStore;
-export const groupMetaDataCache = new NodeCache();
+export const groupDataCache = new NodeCache();
 
 const startSock = async () => {
   const { state, saveCreds } = await authstate();
@@ -79,9 +81,22 @@ const startSock = async () => {
     if (events.call) {
       console.log("recv call event", events.call);
     }
+    if (events["lid-mapping.update"]) {
+      const { lid, pn } = events["lid-mapping.update"];
+      await add_contact(pn, lid);
+    }
 
     if (events["messages.upsert"]) {
       const upsert = events["messages.upsert"];
+
+      if (isJidGroup(upsert.messages[0].key.remoteJid!)) {
+        const chat = upsert.messages[0].key.remoteJid!;
+
+        if (!groupDataCache.has(chat)) {
+          const metadata = await sock.groupMetadata(chat);
+          groupDataCache.set(chat, metadata);
+        }
+      }
 
       const protocolMessage = upsert.messages?.[0]?.message?.protocolMessage;
       if (protocolMessage?.type === 0) {

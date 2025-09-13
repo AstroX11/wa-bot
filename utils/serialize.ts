@@ -10,7 +10,6 @@ import {
 } from "baileys";
 import { extract_txt } from "./extract.ts";
 import { add_contact } from "../sql/contacts.ts";
-import { groupMetaDataCache } from "../client/main.ts";
 
 export default async function serialize(msg: WAMessage, client: WASocket) {
   const { messageTimestamp, pushName, key, broadcast } = msg;
@@ -35,14 +34,6 @@ export default async function serialize(msg: WAMessage, client: WASocket) {
     //@ts-ignore
     (message?.[mtype]?.contextInfo?.mentionedJid || null) as string[] | null;
   await add_contact(sender!, senderAlt);
-
-  if (isGroup) {
-    const isMetaDataAvailable = groupMetaDataCache.has(chat);
-    if (!isMetaDataAvailable) {
-      const metadata = await client.groupMetadata(chat);
-      groupMetaDataCache.set(chat, metadata);
-    }
-  }
 
   return {
     chat,
