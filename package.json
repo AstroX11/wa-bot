@@ -16,7 +16,7 @@
     "url": "git+https://github.com/CodeNoSekai/whatsapp-bot.git"
   },
   "license": "MIT",
-  "author": "AstroX11 salmanytofficial",
+  "author": "AstroX11",
   "type": "module",
   "main": "client/main.ts",
   "scripts": {
@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@cacheable/node-cache": "^1.7.0",
-    "baileys": "^7.0.0-rc.2",
+    "baileys": "github:WhiskeySockets/Baileys",
     "dotenv": "^17.2.2",
     "pino": "^9.9.4",
     "pino-pretty": "^13.1.1",

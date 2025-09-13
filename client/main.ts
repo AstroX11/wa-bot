@@ -3,34 +3,35 @@ import makeWASocket, {
   DisconnectReason,
   makeCacheableSignalKeyStore,
   type CacheStore,
-} from "../../Baileys/lib/index.js";
+} from "baileys";
 import { Boom } from "@hapi/boom";
 import NodeCache from "@cacheable/node-cache";
-import * as P from "pino";
+import { pino } from "pino";
 import authstate from "../sql/authstate.ts";
-import { add_message, getMessage } from "../sql/messages.ts";
 import messages from "../events/messages.ts";
-import type { GroupMetadata } from "baileys";
+import { getMessage } from "../sql/messages.ts";
+import { cachedGroupMetadata } from "../utils/cache.ts";
+import config from "../config.ts";
 
-const logger = P.pino({
-  level: "info",
+const logger = pino({
+  level: config.NODE_ENV == "development" ? "info" : "error",
   transport: {
     targets: [
       {
         target: "pino-pretty",
         options: { colorize: true },
-        level: "info",
+        level: config.NODE_ENV == "development" ? "info" : "error",
       },
       {
         target: "pino/file",
         options: { destination: "./wa-logs.txt" },
-        level: "info",
+        level: config.NODE_ENV == "development" ? "info" : "error",
       },
     ],
   },
 });
 
-logger.level = "info";
+logger.level = config.NODE_ENV == "development" ? "info" : "error";
 
 const msgRetryCounterCache = new NodeCache() as CacheStore;
 export const groupMetaDataCache = new NodeCache();
@@ -55,72 +56,47 @@ const startSock = async () => {
     console.log(`Pairing code: ${code}`);
   }
 
-  sock.ev.process(
-    // events is a map for event name => event data
-    async (events) => {
-      if (events["creds.update"]) {
-        await saveCreds();
-      }
+  sock.ev.process(async (events) => {
+    if (events["creds.update"]) {
+      await saveCreds();
+    }
 
-      if (events["connection.update"]) {
-        const update = events["connection.update"];
-        const { connection, lastDisconnect } = update;
-        if (connection === "close") {
-          if (
-            (lastDisconnect?.error as Boom)?.output?.statusCode !==
-            DisconnectReason.loggedOut
-          ) {
-            startSock();
-          } else {
-            console.log("Connection closed. You are logged out.");
-          }
+    if (events["connection.update"]) {
+      const update = events["connection.update"];
+      const { connection, lastDisconnect } = update;
+      if (connection === "close") {
+        if (
+          (lastDisconnect?.error as Boom)?.output?.statusCode !==
+          DisconnectReason.loggedOut
+        ) {
+          startSock();
+        } else {
+          console.log("Connection closed. You are logged out.");
         }
-
-        if (connection === "open") {
-          console.log("connection update", update);
-        }
-      }
-
-      if (events.call) {
-        console.log("recv call event", events.call);
-      }
-
-      if (events["messages.upsert"]) {
-        const upsert = events["messages.upsert"];
-
-        const protocolMessage = upsert.messages?.[0]?.message?.protocolMessage;
-        if (protocolMessage?.type === 0) {
-          sock.ev.emit("messages.delete", {
-            keys: [protocolMessage.key!],
-          });
-        }
-        await messages(upsert.messages[0], sock);
-      }
-
-      if (events["presence.update"]) {
-        console.log(events["presence.update"]);
-      }
-
-      if (events["chats.update"]) {
-        console.log(events["chats.update"][0].messages?.[0].message);
-      }
-
-      if (events["messaging-history.set"]) {
-        for (const message of events["messaging-history.set"].messages) {
-          await add_message(message);
-        }
-      }
-
-      if (events["messages.delete"]) {
-        console.log("deleted message:", events["messages.delete"]);
       }
     }
-  );
+
+    if (events.call) {
+      console.log("recv call event", events.call);
+    }
+
+    if (events["messages.upsert"]) {
+      const upsert = events["messages.upsert"];
+
+      const protocolMessage = upsert.messages?.[0]?.message?.protocolMessage;
+      if (protocolMessage?.type === 0) {
+        sock.ev.emit("messages.delete", {
+          keys: [protocolMessage.key!],
+        });
+      }
+      await messages(upsert.messages[0], sock);
+    }
+
+    if (events["messages.delete"]) {
+      console.log("deleted message:", events["messages.delete"]);
+    }
+  });
   return sock;
 };
 
 startSock();
-
-async function cachedGroupMetadata(jid: string) {
-  return groupMetaDataCache.get(jid) as GroupMetadata | undefined;
-}

@@ -5,6 +5,8 @@ import {
   normalizeMessageContent,
   type WASocket,
   type WAMessage,
+  type AnyMessageContent,
+  type MiscMessageGenerationOptions,
 } from "baileys";
 import { extract_txt } from "./extract.ts";
 import { add_contact } from "../sql/contacts.ts";
@@ -60,6 +62,15 @@ export default async function serialize(msg: WAMessage, client: WASocket) {
     message,
     text,
     mentions,
+    send: async (
+      content: AnyMessageContent,
+      options?: MiscMessageGenerationOptions
+    ) => {
+      return await serialize(
+        (await client.sendMessage(chat, content, options)) as WAMessage,
+        client
+      );
+    },
   };
 }
 
