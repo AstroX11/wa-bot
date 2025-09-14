@@ -14,6 +14,7 @@ import { getMessage } from "../sql/messages.ts";
 import { cachedGroupMetadata } from "../utils/cache.ts";
 import config from "../config.ts";
 import { AddContact } from "../sql/contacts.ts";
+import { loadCommands } from "../utils/plugins.ts";
 
 const logger = pino({
   level: config.NODE_ENV == "development" ? "info" : "error",
@@ -57,6 +58,8 @@ const startSock = async () => {
     const code = await sock.requestPairingCode("2348060598064", "12345678");
     console.log(`Pairing code: ${code}`);
   }
+
+  loadCommands();
 
   sock.ev.process(async (events) => {
     if (events["creds.update"]) {
