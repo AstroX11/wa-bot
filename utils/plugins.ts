@@ -17,7 +17,7 @@ export type Command = {
   run: (client: WASocket, message: Serialize, args: string) => Promise<any>;
 };
 
-const commands = new Map<string, Command>();
+export const commands = new Map<string, Command>();
 const eventCommands: Command[] = [];
 
 export const loadCommands = async () => {
