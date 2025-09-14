@@ -13,7 +13,7 @@ const Contact = sequelize.define(
 
 await Contact.sync();
 
-export const add_contact = async (id: string, second?: string) => {
+export const AddContact = async (id: string, second?: string) => {
   let pn: string | null = null;
   let lid: string | null = null;
 
@@ -31,11 +31,11 @@ export const add_contact = async (id: string, second?: string) => {
   return await Contact.upsert({ pn, lid });
 };
 
-export const get_contacts = async () => {
+export const GetContacts = async () => {
   return await Contact.findAll();
 };
 
-export const get_contact = async (
+export const GetContact = async (
   id: string
 ): Promise<{
   pn: string;

@@ -13,7 +13,7 @@ const Message = sequelize.define(
 
 await Message.sync();
 
-export const add_message = async (message: WAMessage) => {
+export const addMessage = async (message: WAMessage) => {
   return await Message.upsert({
     id: message.key.id,
     message: Buffer.from(JSON.stringify(message || {})),

@@ -1,5 +1,5 @@
 import type { WAMessageContent } from "baileys";
-import { get_contact } from "../sql/contacts.ts";
+import { GetContact } from "../sql/contacts.ts";
 
 export function extract_txt(message?: WAMessageContent): string | null {
   if (!message) return null;
@@ -39,7 +39,7 @@ export const getUser = async (
 ): Promise<{ pn: string; lid: string }> => {
   id = id.replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, "");
 
-  const { pn, lid } = await get_contact(id);
+  const { pn, lid } = await GetContact(id);
 
   return {
     pn,

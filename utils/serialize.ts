@@ -9,7 +9,7 @@ import {
   type MiscMessageGenerationOptions,
 } from "baileys";
 import { extract_txt } from "./extract.ts";
-import { add_contact } from "../sql/contacts.ts";
+import { AddContact } from "../sql/contacts.ts";
 
 export default async function serialize(msg: WAMessage, client: WASocket) {
   const { messageTimestamp, pushName, key, broadcast } = msg;
@@ -33,7 +33,7 @@ export default async function serialize(msg: WAMessage, client: WASocket) {
   const mentions =
     //@ts-ignore
     (message?.[mtype]?.contextInfo?.mentionedJid || null) as string[] | null;
-  await add_contact(sender!, senderAlt);
+  await AddContact(sender!, senderAlt);
 
   return {
     chat,

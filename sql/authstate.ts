@@ -9,7 +9,7 @@ import {
   type AuthenticationCreds,
   type SignalDataTypeMap,
 } from "baileys";
-import { add_contact } from "./contacts.ts";
+import { AddContact } from "./contacts.ts";
 
 const Auth = sequelize.define(
   "auth",
@@ -172,7 +172,7 @@ export default async () => {
                     ? [String(data) + "@s.whatsapp.net", base + "@lid"]
                     : [base + "@s.whatsapp.net", String(data) + "@lid"];
 
-                  await add_contact(pn, lid);
+                  await AddContact(pn, lid);
                   continue;
                 }
 

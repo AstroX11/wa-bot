@@ -1,5 +1,5 @@
 import type { WAMessage, WASocket } from "baileys";
-import { add_message } from "../sql/messages.ts";
+import { addMessage } from "../sql/messages.ts";
 import serialize from "../utils/serialize.ts";
 import response from "./response.ts";
 
@@ -10,7 +10,7 @@ export default async (message: WAMessage, client: WASocket) => {
 
   tasks.push(response(msg, client));
 
-  tasks.push(add_message(message));
+  tasks.push(addMessage(message));
 
   await Promise.all(tasks);
 };

@@ -13,7 +13,7 @@ import messages from "../events/messages.ts";
 import { getMessage } from "../sql/messages.ts";
 import { cachedGroupMetadata } from "../utils/cache.ts";
 import config from "../config.ts";
-import { add_contact } from "../sql/contacts.ts";
+import { AddContact } from "../sql/contacts.ts";
 
 const logger = pino({
   level: config.NODE_ENV == "development" ? "info" : "error",
@@ -83,7 +83,7 @@ const startSock = async () => {
     }
     if (events["lid-mapping.update"]) {
       const { lid, pn } = events["lid-mapping.update"];
-      await add_contact(pn, lid);
+      await AddContact(pn, lid);
     }
 
     if (events["messages.upsert"]) {
