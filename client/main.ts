@@ -2,6 +2,7 @@ import makeWASocket, {
   delay,
   DisconnectReason,
   isJidGroup,
+  jidNormalizedUser,
   makeCacheableSignalKeyStore,
   type CacheStore,
 } from "baileys";
@@ -15,6 +16,7 @@ import { cachedGroupMetadata } from "../utils/cache.ts";
 import config from "../config.ts";
 import { AddContact } from "../sql/contacts.ts";
 import { loadCommands } from "../utils/plugins.ts";
+import { Settings } from "../sql/bot.ts";
 
 const logger = pino({
   level: config.NODE_ENV == "development" ? "info" : "error",
@@ -78,6 +80,19 @@ const startSock = async () => {
         } else {
           console.log("Connection closed. You are logged out.");
         }
+      }
+
+      if (connection == "open") {
+        await sock.sendMessage(sock.user!.id, {
+          text: `\`\`\`Bot Started\nPrefix: ${
+            (await Settings.prefix.get()) || "non"
+          }\`\`\``,
+        });
+
+        await Settings.sudo.set([
+          jidNormalizedUser(sock.user!.id),
+          jidNormalizedUser(sock.user!.lid),
+        ]);
       }
     }
 

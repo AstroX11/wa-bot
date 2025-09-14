@@ -1,6 +1,6 @@
 import { DataTypes, Op } from "sequelize";
 import sequelize from "../client/database.ts";
-import { isLidUser, isPnUser } from "baileys";
+import { isLidUser, isPnUser, jidNormalizedUser } from "baileys";
 
 const Contact = sequelize.define(
   "contacts",
@@ -28,7 +28,10 @@ export const AddContact = async (id: string, second?: string) => {
 
   if (!pn || !lid) return;
 
-  return await Contact.upsert({ pn, lid });
+  return await Contact.upsert({
+    pn: jidNormalizedUser(pn),
+    lid: jidNormalizedUser(lid),
+  });
 };
 
 export const GetContacts = async () => {

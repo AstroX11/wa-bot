@@ -7,6 +7,7 @@ import {
   type WAMessage,
   type AnyMessageContent,
   type MiscMessageGenerationOptions,
+  jidNormalizedUser,
 } from "baileys";
 import { extract_txt } from "./extract.ts";
 import { AddContact } from "../sql/contacts.ts";
@@ -22,11 +23,12 @@ export default async function serialize(msg: WAMessage, client: WASocket) {
   const message = normalizeMessageContent(msg.message);
   const text = extract_txt(msg.message!);
   const mtype = getContentType(message);
-  const sender = isGroup ? msg.key.participant : chat;
-  const senderAlt =
+  const sender = jidNormalizedUser(isGroup ? msg.key.participant! : chat);
+  const senderAlt = jidNormalizedUser(
     isGroup || isNewsletter || isBroadcast
       ? msg.key.participantAlt
-      : key.remoteJidAlt;
+      : key.remoteJidAlt
+  );
 
   const isMsgDlt = message?.protocolMessage?.type == 0;
   const isMsgEdit = message?.protocolMessage?.type == 14;
