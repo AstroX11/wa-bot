@@ -18,6 +18,7 @@ export type Command = {
 };
 
 export const commands = new Map<string, Command>();
+export const uniqueCommands: Command[] = [];
 const eventCommands: Command[] = [];
 
 export const loadCommands = async () => {
@@ -25,6 +26,7 @@ export const loadCommands = async () => {
     const files = readdirSync(join(process.cwd(), "plugins"));
     const cmds = new Map<string, Command>();
     const evts: Command[] = [];
+    const uniques: Command[] = [];
 
     for (const file of files) {
       if (!file.endsWith(".js") && !file.endsWith(".ts")) continue;
@@ -35,13 +37,10 @@ export const loadCommands = async () => {
         const { default: exported } = await import(
           modulePath + `?update=${Date.now()}`
         );
-
         const list = Array.isArray(exported) ? exported : [exported];
 
         for (const command of list) {
           if (typeof command?.run !== "function") continue;
-
-          // normal command (with name)
           if (command?.name) {
             const cmd: Command = {
               name: command.name.toLowerCase(),
@@ -54,32 +53,32 @@ export const loadCommands = async () => {
               event: command?.event || false,
               run: command.run,
             };
-
             cmds.set(cmd.name!, cmd);
             for (const alias of cmd.aliases!) cmds.set(alias, cmd);
+            if (!uniques.some((c) => c.name === cmd.name)) {
+              uniques.push(cmd);
+            }
             if (cmd.event) evts.push(cmd);
-          }
-          // event-only command (no name)
-          else if (command?.event) {
-            const evt: Command = {
-              event: command.event,
-              run: command.run,
-            };
+          } else if (command?.event) {
+            const evt: Command = { event: command.event, run: command.run };
             evts.push(evt);
           }
         }
       } catch (err) {
-        console.error("failed to load", file, err);
+        console.error("[loader] failed to load", file, err);
       }
     }
 
     commands.clear();
     for (const [k, v] of cmds) commands.set(k, v);
 
+    uniqueCommands.length = 0;
+    uniqueCommands.push(...uniques);
+
     eventCommands.length = 0;
     eventCommands.push(...evts);
   } catch (err) {
-    console.error("command loader error", err);
+    console.error("[loader] command loader error", err);
   }
 };
 
@@ -107,13 +106,12 @@ function matchPrefix(text: string): { prefix: string; content: string } | null {
 export const handleCommand = async (client: WASocket, message: Serialize) => {
   if (!message.text) return;
 
-  // run event commands truly in parallel (non-blocking)
   for (const cmd of eventCommands) {
     (async () => {
       try {
         await cmd.run(client, message, message.text!);
       } catch (e) {
-        console.error("event cmd error", cmd.name || "[event-only]", e);
+        console.error("[event] error", cmd.name || "[event-only]", e);
       }
     })();
   }
@@ -134,9 +132,8 @@ export const handleCommand = async (client: WASocket, message: Serialize) => {
   if (
     !(await Settings.sudo.get()).includes(message.sender!) &&
     (await Settings.mode.get()) == "private"
-  ) {
+  )
     return;
-  }
 
   if (cmd?.isSudo && (await Settings.sudo.get()).includes(message.sender!)) {
     return await message.send({ text: "_for my owners only!_" });
@@ -150,12 +147,10 @@ export const handleCommand = async (client: WASocket, message: Serialize) => {
     const participants = await client
       .groupMetadata(message.chat)
       .then((p) => p.participants);
-
     const isBotAdmin = await isAdmin(
       participants,
       jidNormalizedUser(client.user!.id)
     );
-
     if (!(await isAdmin(participants, message.sender!))) {
       return await message.send({ text: "_You are not a group admin_" });
     }
@@ -167,6 +162,6 @@ export const handleCommand = async (client: WASocket, message: Serialize) => {
   try {
     await cmd.run(client, message, args);
   } catch (e) {
-    console.error("command error", cmdName, e);
+    console.error("[handler] command error", cmdName, e);
   }
 };

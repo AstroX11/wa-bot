@@ -4,7 +4,7 @@ import { performance } from "perf_hooks";
 import type { WASocket } from "baileys";
 import type { Serialize } from "../utils/serialize.ts";
 import { Settings } from "../sql/bot.ts";
-import { commands } from "../utils/plugins.ts";
+import { uniqueCommands } from "../utils/plugins.ts";
 
 function formatRuntime(ms: number) {
   const sec = Math.floor(ms / 1000) % 60;
@@ -18,8 +18,42 @@ function formatMemUsage() {
   return `${mem.toFixed(2)} MB`;
 }
 
-function fancyText(text: string) {
-  return text[0].toUpperCase() + text.slice(1);
+const fancyMap: Record<string, string> = {
+  a: "ᴀ",
+  b: "ʙ",
+  c: "ᴄ",
+  d: "ᴅ",
+  e: "ᴇ",
+  f: "ғ",
+  g: "ɢ",
+  h: "ʜ",
+  i: "ɪ",
+  j: "ᴊ",
+  k: "ᴋ",
+  l: "ʟ",
+  m: "ᴍ",
+  n: "ɴ",
+  o: "ᴏ",
+  p: "ᴘ",
+  q: "ǫ",
+  r: "ʀ",
+  s: "s",
+  t: "ᴛ",
+  u: "ᴜ",
+  v: "ᴠ",
+  w: "ᴡ",
+  x: "x",
+  y: "ʏ",
+  z: "ᴢ",
+};
+
+function fancyText(input: string): string {
+  let out = "";
+  for (const ch of input) {
+    const lower = ch.toLowerCase();
+    out += fancyMap[lower] || ch;
+  }
+  return out;
 }
 
 export default {
@@ -27,11 +61,11 @@ export default {
   aliases: ["help", "commands"],
   run: async (client: WASocket, message: Serialize) => {
     const botName = (await Settings.botname.get()) || "Bot";
-    const owner = (await Settings.sudo.get())[0] || "unknown";
+    const owner = client.user?.name || "Unknown";
     const mode = await Settings.mode.get();
     const uptime = performance.now();
 
-    const allCommands = Array.from(commands.values());
+    const allCommands = uniqueCommands;
 
     const categorized: Record<string, string[]> = {};
     for (const cmd of allCommands) {
