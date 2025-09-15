@@ -30,3 +30,17 @@ export const getMessage = async (key: proto.IMessageKey) => {
     ? proto.Message.create(msg.get({ plain: true }).message)
     : undefined;
 };
+
+export const getMessageFull = async (key: proto.IMessageKey) => {
+  const msg = await Message.findOne({
+    where: { id: key.id },
+  });
+
+  if (!msg) return undefined;
+
+  const raw = msg.get({ plain: true });
+
+  const m = JSON.parse(raw.message.toString());
+
+  return proto.WebMessageInfo.create(m);
+};

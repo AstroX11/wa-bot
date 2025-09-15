@@ -11,7 +11,7 @@ import NodeCache from "@cacheable/node-cache";
 import { pino } from "pino";
 import authstate from "../sql/authstate.ts";
 import messages from "../events/messages.ts";
-import { getMessage } from "../sql/messages.ts";
+import { getMessage, getMessageFull } from "../sql/messages.ts";
 import { cachedGroupMetadata } from "../utils/cache.ts";
 import config from "../config.ts";
 import { AddContact } from "../sql/contacts.ts";
@@ -19,6 +19,7 @@ import { loadCommands } from "../utils/plugins.ts";
 import { Settings } from "../sql/bot.ts";
 import { isAutoKick } from "../sql/autokick.ts";
 import { startScheduler } from "../utils/timer.ts";
+import { getAntiDelete } from "../sql/antidelete.ts";
 
 const logger = pino({
   level: config.NODE_ENV == "development" ? "info" : "error",
@@ -138,10 +139,12 @@ const startSock = async () => {
           await sock.groupParticipantsUpdate(
             update.id,
             [update.participants[0]],
-            "remove",
+            "remove"
           );
           return await sock.sendMessage(update.id, {
-            text: `_@${update.participants[0].split("@")[0]} kicked due to autokick_`,
+            text: `_@${
+              update.participants[0].split("@")[0]
+            } kicked due to autokick_`,
             mentions: [update.participants[0]],
           });
         }
@@ -149,7 +152,22 @@ const startSock = async () => {
     }
 
     if (events["messages.delete"]) {
-      console.log("deleted message:", events["messages.delete"]);
+      const update = events["messages.delete"];
+      const isEnabled = await getAntiDelete();
+      if (!isEnabled) return;
+
+      if ("keys" in update) {
+        for (const key of update.keys) {
+          let msg = await getMessageFull(key);
+          if (!msg) continue;
+
+          await sock.sendMessage(
+            sock.user!.id,
+            { forward: msg },
+            { quoted: msg }
+          );
+        }
+      }
     }
   });
   startScheduler(sock);

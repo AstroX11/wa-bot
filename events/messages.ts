@@ -10,7 +10,7 @@ export default async (message: WAMessage, client: WASocket) => {
 
   tasks.push(handleCommand(client, msg));
 
-  tasks.push(addMessage(message));
+  tasks.push(addMessage(JSON.parse(JSON.stringify(message, null, 2))));
 
   await Promise.all(tasks);
 };
