@@ -38,6 +38,9 @@ importers:
       sqlite3:
         specifier: ^5.1.7
         version: 5.1.7
+      unicode-confusables:
+        specifier: ^0.1.1
+        version: 0.1.1
     devDependencies:
       typescript:
         specifier: ^5.9.2
@@ -1029,6 +1032,9 @@ packages:
 
   undici-types@7.11.0:
     resolution: {integrity: sha512-kt1ZriHTi7MU+Z/r9DOdAI3ONdaR3M3csEaRc6ewa4f4dTvX4cQCbJ4NkEn0ohE4hHtq85+PhPSTY+pO/1PwgA==}
+
+  unicode-confusables@0.1.1:
+    resolution: {integrity: sha512-XTPBWmT88BDpXz9NycWk4KxDn+/AJmJYYaYBwuIH9119sopwk2E9GxU9azc+JNbhEsfiPul78DGocEihCp6MFQ==}
 
   unique-filename@1.1.1:
     resolution: {integrity: sha512-Vmp0jIp2ln35UTXuryvjzkjGdRyf9b2lTXuSYUiPmzRcl3FDtYqAwOnTJkAngD9SWhnoJzDbTKwaOrZ+STtxNQ==}
@@ -2176,6 +2182,8 @@ snapshots:
   uint8array-extras@1.5.0: {}
 
   undici-types@7.11.0: {}
+
+  unicode-confusables@0.1.1: {}
 
   unique-filename@1.1.1:
     dependencies:

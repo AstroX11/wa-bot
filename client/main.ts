@@ -18,6 +18,7 @@ import { AddContact } from "../sql/contacts.ts";
 import { loadCommands } from "../utils/plugins.ts";
 import { Settings } from "../sql/bot.ts";
 import { isAutoKick } from "../sql/autokick.ts";
+import { startScheduler } from "../utils/timer.ts";
 
 const logger = pino({
   level: config.NODE_ENV == "development" ? "info" : "error",
@@ -151,6 +152,7 @@ const startSock = async () => {
       console.log("deleted message:", events["messages.delete"]);
     }
   });
+  startScheduler(sock);
   return sock;
 };
 
