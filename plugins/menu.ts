@@ -98,14 +98,15 @@ export default {
       "╰─────────────```\n";
 
     let cmdBlock = "";
+    let counter = 1;
     for (const cat of categories) {
       const cmds = categorized[cat];
       const fancyCat = fancyText(cat);
 
       cmdBlock += "```" + `╭─── ${fancyCat} ───\n`;
-      cmds.forEach((cmd, i) => {
-        cmdBlock += `│ ${i + 1} ${cmd}\n`;
-      });
+      for (const cmd of cmds) {
+        cmdBlock += `│ ${counter++} ${cmd}\n`;
+      }
       cmdBlock += "╰───────```\n";
     }
 

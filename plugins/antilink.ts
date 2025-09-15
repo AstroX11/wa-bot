@@ -64,12 +64,13 @@ export default [
       const metadata = await client.groupMetadata(message.chat);
       const isSenderAdmin = await isAdmin(
         metadata.participants,
-        message.sender!
+        message.sender!,
       );
-      const isBotAdmin = await isAdmin(
-        metadata.participants,
-        jidNormalizedUser(client.user!.id)
-      );
+      const isBotAdmin =
+        (await isAdmin(
+          metadata.participants,
+          jidNormalizedUser(client.user!.id),
+        )) || (await isAdmin(metadata.participants, client.user!.lid!));
 
       if (isSenderAdmin || !isBotAdmin) return;
 
@@ -91,7 +92,7 @@ export default [
         await client.groupParticipantsUpdate(
           message.chat,
           [message.sender!],
-          "remove"
+          "remove",
         );
         return await message.send({
           text: `_${senderTag} kicked from group for sending links_`,

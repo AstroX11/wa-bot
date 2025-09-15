@@ -32,6 +32,9 @@ importers:
       sequelize:
         specifier: ^6.37.7
         version: 6.37.7(sqlite3@5.1.7)
+      sharp:
+        specifier: ^0.34.3
+        version: 0.34.3
       sqlite3:
         specifier: ^5.1.7
         version: 5.1.7
