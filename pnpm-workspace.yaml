@@ -1,5 +1,0 @@
-onlyBuiltDependencies:
-  - baileys
-  - protobufjs
-  - sharp
-  - sqlite3

@@ -21,7 +21,7 @@ export default async function serialize(msg: WAMessage, client: WASocket) {
   const isBroadcast = broadcast;
   const isPrivate = !isGroup && !isNewsletter && !isBroadcast;
   const message = normalizeMessageContent(msg.message);
-  const text = extract_txt(msg.message!);
+  const text = extract_txt(message);
   const mtype = getContentType(message);
   const sender = jidNormalizedUser(isGroup ? msg.key.participant! : chat);
   const senderAlt = jidNormalizedUser(
@@ -57,12 +57,14 @@ export default async function serialize(msg: WAMessage, client: WASocket) {
     mentions,
     send: async (
       content: AnyMessageContent,
-      options?: MiscMessageGenerationOptions
+      options?: MiscMessageGenerationOptions & { jid?: string }
     ) => {
-      return await serialize(
-        (await client.sendMessage(chat, content, options)) as WAMessage,
-        client
+      const msg = await client.sendMessage(
+        options?.jid || chat,
+        content,
+        options
       );
+      return await serialize(msg!, client);
     },
   };
 }

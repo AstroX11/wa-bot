@@ -6,7 +6,7 @@ const Message = sequelize.define(
   "messages",
   {
     id: { type: DataTypes.STRING, primaryKey: true, allowNull: false },
-    message: { type: DataTypes.BLOB },
+    message: { type: DataTypes.TEXT }, // Changed from BLOB to TEXT
   },
   { timestamps: false }
 );
@@ -16,7 +16,7 @@ await Message.sync();
 export const addMessage = async (message: WAMessage) => {
   return await Message.upsert({
     id: message.key.id,
-    message: Buffer.from(JSON.stringify(message || {})),
+    message: JSON.stringify(message || {}), // Store as JSON string directly
   });
 };
 
@@ -27,7 +27,7 @@ export const getMessage = async (key: proto.IMessageKey) => {
   });
 
   return msg
-    ? proto.Message.create(msg.get({ plain: true }).message)
+    ? proto.Message.create(JSON.parse(msg.get({ plain: true }).message))
     : undefined;
 };
 
@@ -40,7 +40,7 @@ export const getMessageFull = async (key: proto.IMessageKey) => {
 
   const raw = msg.get({ plain: true });
 
-  const m = JSON.parse(raw.message.toString());
+  const m = JSON.parse(raw.message); // No need for .toString() since it's already a string
 
   return proto.WebMessageInfo.create(m);
 };

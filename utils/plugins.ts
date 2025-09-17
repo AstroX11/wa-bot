@@ -82,7 +82,7 @@ export const loadCommands = async () => {
   }
 };
 
-setInterval(loadCommands, 2000);
+setInterval(loadCommands, 10000);
 
 const prefixes: string | string[] = (await Settings.prefix.get()) || "";
 
@@ -135,7 +135,12 @@ export const handleCommand = async (client: WASocket, message: Serialize) => {
   )
     return;
 
-  if (cmd?.isSudo && (await Settings.sudo.get()).includes(message.sender!)) {
+  const sudo = await Settings.sudo.get();
+
+  if (
+    cmd?.isSudo &&
+    !(sudo.includes(message.sender!) || sudo.includes(message.senderAlt))
+  ) {
     return await message.send({ text: "_for my owners only!_" });
   }
 

@@ -1,6 +1,8 @@
 import type { WASocket } from "baileys";
 import type { Serialize } from "../utils/serialize.ts";
+import type { Command } from "../utils/plugins.ts";
 import { performance } from "perf_hooks";
+import { formatRuntime } from "../utils/extras.ts";
 
 export default [
   {
@@ -19,4 +21,14 @@ export default [
       });
     },
   },
-];
+  {
+    name: "runtime",
+    aliases: ["uptime"],
+    category: "utility",
+    run: async (_, m) => {
+      return await m.send({
+        text: `\`\`\`runtime ::: ${formatRuntime(performance.now())}\`\`\``,
+      });
+    },
+  },
+] satisfies Command[];
