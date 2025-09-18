@@ -84,9 +84,11 @@ export const loadCommands = async () => {
 
 setInterval(loadCommands, 10000);
 
-const prefixes: string | string[] = (await Settings.prefix.get()) || "";
+async function matchPrefix(
+  text: string
+): Promise<{ prefix: string; content: string } | null> {
+  const prefixes: string | string[] = (await Settings.prefix.get()) || "";
 
-function matchPrefix(text: string): { prefix: string; content: string } | null {
   if (typeof prefixes === "string") {
     if (prefixes === "") return { prefix: "", content: text.trim() };
     for (const p of prefixes.split("")) {
@@ -116,7 +118,7 @@ export const handleCommand = async (client: WASocket, message: Serialize) => {
     })();
   }
 
-  const prefMatch = matchPrefix(message.text);
+  const prefMatch = await matchPrefix(message.text);
   if (!prefMatch) return;
   const withoutPrefix = prefMatch.content;
   if (!withoutPrefix) return;

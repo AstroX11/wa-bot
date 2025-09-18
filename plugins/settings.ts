@@ -4,7 +4,7 @@ import type { Command } from "../utils/plugins.ts";
 import { Settings } from "../sql/bot.ts";
 import { getUser } from "../utils/extract.ts";
 
-const prefix = (await Settings.prefix.get()) || ".";
+const prefix = (await Settings.prefix.get()) || "";
 
 export default [
   {
