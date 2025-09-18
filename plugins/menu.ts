@@ -4,12 +4,13 @@ import { performance } from "perf_hooks";
 import type { WASocket } from "baileys";
 import type { Serialize } from "../utils/serialize.ts";
 import { Settings } from "../sql/bot.ts";
-import { uniqueCommands } from "../utils/plugins.ts";
+import { type Command, uniqueCommands } from "../utils/plugins.ts";
 import { fancyText, formatMemUsage, formatRuntime } from "../utils/extras.ts";
 
 export default {
   name: "menu",
   aliases: ["help", "commands"],
+  category: "utility",
   run: async (client: WASocket, message: Serialize) => {
     const botName = (await Settings.botname.get()) || "Bot";
     const owner = client.user?.name || "Unknown";
@@ -66,4 +67,4 @@ export default {
       mentions: [message.sender],
     });
   },
-};
+} satisfies Command;

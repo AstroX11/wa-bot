@@ -11,7 +11,7 @@ const prefix = (await Settings.prefix.get()) || ".";
 export default [
   {
     name: "antilink",
-    category: "features",
+    category: "group",
     isGroup: true,
     run: async (client: WASocket, message: Serialize, args: string) => {
       const [sub, action] = args?.toLowerCase().split(" ") || [];
