@@ -23,22 +23,22 @@
     "start": "node client/main.ts"
   },
   "dependencies": {
-    "@cacheable/node-cache": "^1.7.0",
+    "@cacheable/node-cache": "^1.7.3",
     "@hapi/boom": "^10.0.1",
     "async-mutex": "^0.5.0",
     "axios": "^1.12.2",
     "baileys": "github:WhiskeySockets/Baileys",
     "cheerio": "^1.1.2",
-    "dotenv": "^17.2.2",
-    "pino": "^9.9.4",
+    "dotenv": "^17.2.3",
+    "pino": "^9.13.0",
     "pino-pretty": "^13.1.1",
     "sequelize": "^6.37.7",
-    "sharp": "^0.34.3",
+    "sharp": "^0.34.4",
     "sqlite3": "^5.1.7",
     "unicode-confusables": "^0.1.1",
     "youtubei.js": "^15.1.1"
   },
   "devDependencies": {
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.3"
   }
 }
