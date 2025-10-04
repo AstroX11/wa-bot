@@ -709,7 +709,7 @@ __metadata:
 
 "baileys@github:WhiskeySockets/Baileys":
   version: 7.0.0-rc.5
-  resolution: "baileys@https://github.com/WhiskeySockets/Baileys.git#commit=55f09e8c84118a8920c94f069c763c3e360f5eee"
+  resolution: "baileys@https://github.com/WhiskeySockets/Baileys.git#commit=38e0f2c0e60705c734f49a21c69e3de237b28191"
   dependencies:
     "@cacheable/node-cache": "npm:^1.4.0"
     "@hapi/boom": "npm:^9.1.3"
@@ -733,7 +733,7 @@ __metadata:
       optional: true
     link-preview-js:
       optional: true
-  checksum: 10c0/7671d46462ec56dbf6daacb6dc192e97280287a91e79a1bffdef572dbfbfa979ea5cd453faa511c838e4e3ee131ef729b56c4ce07e1aae385f4ccdd1ba3b5a9e
+  checksum: 10c0/e242765fdf7e727fe9bc06185c737b60220014a34fdf34d7d347c846b9b109fa8315246792887951265031b2bf9a5d0ee65e4585d82b18aa963605b544d6df93
   languageName: node
   linkType: hard
 
@@ -2390,8 +2390,8 @@ __metadata:
   linkType: hard
 
 "pino@npm:^9.13.0, pino@npm:^9.6":
-  version: 9.13.0
-  resolution: "pino@npm:9.13.0"
+  version: 9.13.1
+  resolution: "pino@npm:9.13.1"
   dependencies:
     atomic-sleep: "npm:^1.0.0"
     on-exit-leak-free: "npm:^2.1.0"
@@ -2406,7 +2406,7 @@ __metadata:
     thread-stream: "npm:^3.0.0"
   bin:
     pino: bin.js
-  checksum: 10c0/e636535de3f6658ccc6fd59f71fd958026c1291ba8bffedee2ea85846732d525cf0949be377ee309d537b6bcdebd69de60c38f113bad94b8dc356b0df058e03f
+  checksum: 10c0/c99e879f9538f7255488ad276a46a857cf9114217b754b850b7f1441e31b724a6d6f0697228ead954d3d9601522704e03cad5d441c228108073eed2f37ea0e41
   languageName: node
   linkType: hard
 
@@ -2809,9 +2809,9 @@ __metadata:
   linkType: hard
 
 "slow-redact@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "slow-redact@npm:0.3.0"
-  checksum: 10c0/bb2f77830f64fb01079849e0c6433c15e782b88cccb82d4b0d62ce216307cf514ea3f92e9b2c6ae1b1d613ac7743305d5f0324e94c9dc8e41908939456248f9a
+  version: 0.3.1
+  resolution: "slow-redact@npm:0.3.1"
+  checksum: 10c0/7f495a85108f554ea492b7fa1c8892b690a8172cb6d8cd77c56fef00a15d15f46b497a8eb61355a61cc06cbb34246088dc3372ed2ffb22e645c8c5dabc334563
   languageName: node
   linkType: hard
 
@@ -3121,9 +3121,9 @@ __metadata:
   linkType: hard
 
 "undici@npm:^6.21.3":
-  version: 6.21.3
-  resolution: "undici@npm:6.21.3"
-  checksum: 10c0/294da109853fad7a6ef5a172ad0ca3fb3f1f60cf34703d062a5ec967daf69ad8c03b52e6d536c5cba3bb65615769bf08e5b30798915cbccdddaca01045173dda
+  version: 6.22.0
+  resolution: "undici@npm:6.22.0"
+  checksum: 10c0/47903c489d73e26bd47960cf2f04d63282ed050818b672cb05f8dfb6403381b850cf1b1751832654fd3af22aacd9d780e5e61aff563cd97943f5c4f10d5b3e23
   languageName: node
   linkType: hard
 

@@ -88,9 +88,8 @@ const startSock = async () => {
 
       if (connection == "open") {
         await sock.sendMessage(sock.user!.id, {
-          text: `\`\`\`Bot Started\nPrefix: ${
-            (await Settings.prefix.get()) || "non"
-          }\`\`\``,
+          text: `\`\`\`Bot Started\nPrefix: ${(await Settings.prefix.get()) || "non"
+            }\`\`\``,
         });
 
         await Settings.sudo.set([
@@ -141,10 +140,9 @@ const startSock = async () => {
             [update.participants[0]],
             "remove"
           );
-          return await sock.sendMessage(update.id, {
-            text: `_@${
-              update.participants[0].split("@")[0]
-            } kicked due to autokick_`,
+          await sock.sendMessage(update.id, {
+            text: `_@${update.participants[0].split("@")[0]
+              } kicked due to autokick_`,
             mentions: [update.participants[0]],
           });
         }
